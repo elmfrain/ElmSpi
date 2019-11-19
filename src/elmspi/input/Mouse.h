@@ -24,6 +24,7 @@ private:
 	double scrollAmountX, scrollAmountY, sumScrollX, sumScrollY;
 
 	bool pressedStates[statesArraySize];
+	bool initialPressStates[statesArraySize];
 	bool releasedStates[statesArraySize];
 
 	void publicize();
@@ -45,11 +46,15 @@ public:
 
 	bool leftJustReleased() const;
 	bool leftIsPressed() const;
+	bool leftJustPressed() const;
 	bool rightJustReleased() const;
 	bool rightIsPressed() const;
+	bool rightJustPressed() const;
 	bool middleJustReleased() const;
 	bool middleIsPressed() const;
+	bool middleJustPressed() const;
 	bool buttonIsPressed(Buttons button) const;
+	bool buttonJustPressed(Buttons button) const;
 	bool buttonJustReleased(Buttons button) const;
 
 	bool cursorIsFocused() const;

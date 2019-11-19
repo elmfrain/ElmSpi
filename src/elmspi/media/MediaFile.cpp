@@ -49,7 +49,8 @@ MediaType MediaFile::setupMedia(const char* mediaFileName)
 
 	if (avformat_open_input(&formatContext, mediaFileName, NULL, NULL) != 0)
 	{
-		std::cerr << "[MediaClip] : Unable to open  '" << mediaFileName << "'!" <<std::endl;
+
+		throw std::invalid_argument("[MediaClip] : Unable to open  '" + (std::string)mediaFileName + "'!");
 		return mediaType;
 	}
 

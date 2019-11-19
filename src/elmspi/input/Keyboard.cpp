@@ -17,7 +17,7 @@ namespace CallbackHandlers
 	static void onKeyCallback(GLFWwindow* windowID, int key, int scancode, int action, int mods)
 	{
 		Window* window = WindowUtil::getWindowByID(windowID);
-		callback(window->getKeyboard()->tick());
+		callback(window->getKeyboard().tick());
 
 		if (pressedArray == nullptr || initialPressArray == nullptr || releasedArray == nullptr || repeatArray == nullptr) exit(17);
 

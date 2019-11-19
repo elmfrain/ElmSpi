@@ -8,7 +8,7 @@ class AudioClip : public MediaFile
 		{
 			if (mediaType != MediaType::AUDIO && mediaType != MediaType::VIDEO_AND_AUDIO)
 			{
-				std::cerr << "[AudioClip] : The file '" << mediaFileName << "' is not an audio file!" << std::endl;
+				throw std::invalid_argument("[AudioClip] : The file '" + (std::string)mediaFileName + "' is not an audio file!");
 				exit(15);
 			}
 		}

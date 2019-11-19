@@ -27,12 +27,13 @@ public:
 	~Window();
 	void tick();
 	GLFWwindow* getID() const;
-	Keyboard* getKeyboard() const;
-	Mouse* getMouse() const;
+	Keyboard& getKeyboard() const;
+	Mouse& getMouse() const;
 	void makeThisContextCurrent() const;
 	bool shouldClose() const;
 	bool isInFullScreen() const;
 	bool usingVsync() const;
+	bool isFocused() const;
 	int getImageWidth() const;
 	int getImageHeight() const;
 	int getWindowPosX() const;

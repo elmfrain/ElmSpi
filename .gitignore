@@ -1,5 +1,8 @@
 Debug
 Release
+ElmSpi-Testing
+.vs
+*.sln
 *.vcxproj
 *.filters
 *.user

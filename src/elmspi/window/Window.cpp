@@ -138,14 +138,14 @@ GLFWwindow* Window::getID() const
 	return windowID;
 }
 
-Keyboard* Window::getKeyboard() const
+Keyboard& Window::getKeyboard() const
 {
-	return keyboard;
+	return *keyboard;
 }
 
-Mouse* Window::getMouse() const
+Mouse& Window::getMouse() const
 {
-	return mouse;
+	return *mouse;
 }
 
 void Window::makeThisContextCurrent() const
@@ -158,6 +158,11 @@ void Window::makeThisContextCurrent() const
 bool Window::usingVsync() const
 {
 	return vsyncActive;
+}
+
+bool Window::isFocused() const
+{
+	return glfwGetWindowAttrib(windowID, GLFW_FOCUSED);
 }
 
 void Window::setVsync(bool vsync)

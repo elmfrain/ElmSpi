@@ -9,7 +9,7 @@ class ImageFile : public MediaFile
 		{
 			if (mediaType != MediaType::IMAGE)
 			{
-				std::cerr << "[ImageFile] : The file '" << mediaFileName << "' is not an image file!" << std::endl;
+				throw std::invalid_argument("[ImageFile] : The file '" + (std::string)mediaFileName + "' is not an image file!");
 				exit(15);
 			}
 			

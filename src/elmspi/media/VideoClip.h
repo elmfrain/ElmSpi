@@ -9,8 +9,7 @@ class VideoClip : public MediaFile
 		{
 			if (mediaType != MediaType::VIDEO && mediaType != MediaType::VIDEO_AND_AUDIO)
 			{
-				std::cerr << "[VideoClip] : The file '" << mediaFileName << "' is not a video file!" << std::endl;
-				exit(15);
+				throw std::invalid_argument("[VideoClip] : The file '" + (std::string)mediaFileName + "' is not a video file!");
 			}
 
 			setupForDecoding();

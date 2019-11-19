@@ -11,6 +11,7 @@ static double* pCursorPosY = nullptr;
 static bool* pCursorIsOnScreen = nullptr;
 static bool* pHadBeenScrolled = nullptr;
 static bool* pPressedStates = nullptr;
+static bool* pInitialPressedStates = nullptr;
 static bool* pReleasedStates = nullptr;
 static double* pScrollAmountX = nullptr;
 static double* pScrollAmountY = nullptr;
@@ -22,7 +23,7 @@ namespace CallbackHandlers
 	static void onCursorPos(GLFWwindow* windowID, double posX, double posY)
 	{
 		Window* window = WindowUtil::getWindowByID(windowID);
-		callback(window->getMouse()->tick());
+		callback(window->getMouse().tick());
 
 		*pCursorPosX = posX;
 		*pCursorPosY = posY;
@@ -30,18 +31,19 @@ namespace CallbackHandlers
 	static void onEnteringCursor(GLFWwindow* windowID, int isEntering)
 	{
 		Window* window = WindowUtil::getWindowByID(windowID);
-		callback(window->getMouse()->tick());
+		callback(window->getMouse().tick());
 
 		*pCursorIsOnScreen = isEntering ? true : false;
 	}
 	static void onMouseButton(GLFWwindow* windowID, int button, int action, int mods)
 	{
 		Window* window = WindowUtil::getWindowByID(windowID);
-		callback(window->getMouse()->tick());
+		callback(window->getMouse().tick());
 
 		if (action == GLFW_PRESS)
 		{
 			pPressedStates[button] = true;
+			pInitialPressedStates[button] = true;
 		}
 		if (action == GLFW_RELEASE)
 		{
@@ -70,6 +72,7 @@ Mouse::Mouse(GLFWwindow* window)
 	scrollAmountX = scrollAmountY = sumScrollX = sumScrollY = 0.0;
 
 	memset(pressedStates, 0, statesArraySize);
+	memset(initialPressStates, 0, statesArraySize);
 	memset(releasedStates, 0, statesArraySize);
 
 	glfwSetCursorPosCallback(window, CallbackHandlers::onCursorPos);
@@ -80,8 +83,6 @@ Mouse::Mouse(GLFWwindow* window)
 
 Mouse::~Mouse()
 {
-	delete[] pressedStates;
-	delete[] releasedStates;
 }
 
 void Mouse::setLockMouse(bool locked)
@@ -141,6 +142,11 @@ bool Mouse::leftIsPressed() const
 	return pressedStates[Buttons::MOUSE_BUTTON_LEFT];
 }
 
+bool Mouse::leftJustPressed() const
+{
+	return initialPressStates[Buttons::MOUSE_BUTTON_LEFT];
+}
+
 bool Mouse::rightJustReleased() const
 {
 	return releasedStates[Buttons::MOUSE_BUTTON_RIGHT];
@@ -149,6 +155,11 @@ bool Mouse::rightJustReleased() const
 bool Mouse::rightIsPressed() const
 {
 	return pressedStates[Buttons::MOUSE_BUTTON_RIGHT];
+}
+
+bool Mouse::rightJustPressed() const
+{
+	return initialPressStates[Buttons::MOUSE_BUTTON_RIGHT];
 }
 
 bool Mouse::middleJustReleased() const
@@ -161,9 +172,19 @@ bool Mouse::middleIsPressed() const
 	return pressedStates[Buttons::MOUSE_BUTTON_MIDDLE];
 }
 
+bool Mouse::middleJustPressed() const
+{
+	return initialPressStates[Buttons::MOUSE_BUTTON_MIDDLE];
+}
+
 bool Mouse::buttonIsPressed(Buttons button) const
 {
 	return pressedStates[button];
+}
+
+bool Mouse::buttonJustPressed(Buttons button) const
+{
+	return initialPressStates[button];
 }
 
 bool Mouse::buttonJustReleased(Buttons button) const
@@ -204,6 +225,7 @@ void Mouse::tick()
 
 	hadBeenScrolled = false;
 
+	memset(initialPressStates, 0, statesArraySize);
 	memset(releasedStates, 0, statesArraySize);
 }
 
@@ -214,6 +236,7 @@ void Mouse::publicize()
 	pCursorIsOnScreen = &cursorIsOnScreen;
 	pHadBeenScrolled = &hadBeenScrolled;
 	pPressedStates = pressedStates;
+	pInitialPressedStates = initialPressStates;
 	pReleasedStates = releasedStates;
 	pScrollAmountX = &scrollAmountX;
 	pScrollAmountY = &scrollAmountY;
