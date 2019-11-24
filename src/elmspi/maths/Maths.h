@@ -9,7 +9,7 @@
 #define M_PI2_F 1.57079632679489661923f;
 #define M_PI4_F 0.78539816339744830961f;
 
-namespace ElmSpiMaths 
+namespace espi 
 {
 	float toRadians(float degrees);
 	float toDegrees(float radians);
@@ -28,7 +28,10 @@ namespace ElmSpiMaths
 				float u, v;
 			};
 		};
-
+		vec2f()
+		{
+			x = y = 0.0f;
+		}
 		vec2f(float v)
 		{
 			this->x = this->y = v;
@@ -129,6 +132,10 @@ namespace ElmSpiMaths
 				float r, g, b;
 			};
 		};
+		vec3f()
+		{
+			x = y = z = 0.0f;
+		}
 		vec3f(float x, float y, float z)
 		{
 			this->x = x;
@@ -243,6 +250,10 @@ namespace ElmSpiMaths
 				float r, g, b, a;
 			};
 		};
+		vec4f()
+		{
+			x = y = z = w = 0.0f;
+		}
 		vec4f(float x, float y, float z, float w)
 		{
 			this->x = x;

@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-using namespace ElmSpiMaths;
+using namespace espi;
 
 Camera::Camera()
 {

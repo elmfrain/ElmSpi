@@ -1,6 +1,6 @@
 #include "Maths.h"
 
-namespace ElmSpiMaths
+namespace espi
 {
 	float toRadians(float degrees)
 	{
