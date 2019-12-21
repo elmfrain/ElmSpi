@@ -18,8 +18,8 @@ class Camera
 		int getViewportHeight() const;
 	private:
 		float fov = 45.0f;
-		float nPlaneDist = 0.01f;
-		float fPlaneDist = 500.0f;
+		float nPlaneDist = 0.05f;
+		float fPlaneDist = 100.0f;
 		espi::vec2f viewportSize = espi::vec2f(1, 1);
 		espi::matrixf getProjectionMatrix() const;
 };

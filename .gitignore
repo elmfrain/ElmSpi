@@ -1,6 +1,7 @@
 Debug
 Release
 ElmSpi-Testing
+MADIT
 .vs
 *.sln
 *.vcxproj

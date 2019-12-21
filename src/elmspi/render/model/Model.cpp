@@ -13,12 +13,12 @@ static struct QuadFace
 	unsigned int norm1, norm2, norm3, norm4;
 };
 
-bool doesFileExist(const char* fileName)
+static bool doesFileExist(const char* fileName)
 {
 	struct stat buffer;
 	return (stat(fileName, &buffer) == 0);
 }
-bool isCharNumerical(const char& theChar)
+static bool isCharNumerical(const char& theChar)
 {
 	return theChar == '-' || theChar == '.' || (47 < theChar && theChar < 58);
 }
@@ -279,7 +279,7 @@ void Model::preRender()
 	glBindBuffer(GL_ARRAY_BUFFER, modelBuffer);
 
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(2, GL_FLOAT, sizeof(float), (void*)(sizeof(float) * 3));
+	glTexCoordPointer(2, GL_FLOAT, sizeof(float) * 8, (void*)(sizeof(float) * 3));
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * sizeof(float), (void*) 0);

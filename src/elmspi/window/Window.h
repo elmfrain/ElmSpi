@@ -8,7 +8,7 @@ static const int TITLE_MAX_CHAR = 1024;
 class Window
 {
 public:
-	typedef void (*RenderCallbackFun)(const Window*);
+	typedef void (*RenderCallbackFun)(Window*);
 private:
 	RenderCallbackFun renderCallback;
 	GLFWwindow* windowID;
