@@ -12,4 +12,6 @@ namespace GLUtil
 	*/
 	void setGUIViewPort(int x, int y, int width, int height);
 	espi::matrixf getModelViewMatrix();
+	espi::matrixf getProjectionMatrix();
+	espi::matrixf getGUIViewportMatrix(int x, int y, int width, int height);
 }

@@ -186,21 +186,21 @@ bool Window::isInFullScreen() const
 	return fullscreen;
 }
 
-int Window::getImageWidth() const
+int Window::getWidth() const
 {
 	return width;
 }
 
-int Window::getImageHeight() const
+int Window::getHeight() const
 {
 	return height;
 }
 
-int Window::getWindowPosX() const
+int Window::getPosX() const
 {
 	return posX;
 }
-int Window::getWindowPosY() const
+int Window::getPosY() const
 {
 	return posY;
 }

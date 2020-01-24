@@ -22,6 +22,25 @@ void GLUtil::setGUIViewPort(int x, int y, int width, int height)
 	glTranslatef(-width / 2.0f + x, -height / 2.0f + y, 0.0f);
 }
 
+espi::matrixf GLUtil::getGUIViewportMatrix(int x, int y, int width, int height)
+{
+	float matData[16] =
+	{
+		2.0f / width,           0.0f, 0.0f, 0.0f,
+		        0.0f, -2.0f / height, 0.0f, 0.0f,
+			    0.0f,           0.0f, 1.0f, 0.0f,
+		   -1.0f + x,       1.0f + y, 0.0f, 1.0f
+	};
+	return espi::matrixf(matData, 4, 4);
+}
+
+espi::matrixf GLUtil::getProjectionMatrix()
+{
+	float matData[16];
+	glGetFloatv(GL_PROJECTION_MATRIX, matData);
+	return espi::matrixf(matData, 4, 4);
+}
+
 espi::matrixf GLUtil::getModelViewMatrix()
 {
 	float matData[16];

@@ -1,5 +1,4 @@
 #include "Font.h"
-#include <string>
 #include <GL/glew.h>
 #include "../../media/ImageFile.h"
 #include <fstream>
@@ -31,13 +30,12 @@ static int fetchNumberString(const char* string, char* buffer)
 	return charsCopied;
 }
 
-Font::Font(const char* fontAtlasFile, const char* fontInfoFile)
+Font::Font(const char* fontInfoFile)
 {
+	if (*fontInfoFile == 0) return;
 	if (!doesFileExist(fontInfoFile)) throw std::invalid_argument("[Font] : The file for font data loading does not exist!");
 
-	loadFontInfo(fontInfoFile);
-
-	ImageFile image(fontAtlasFile);
+	ImageFile image(loadFontInfo(fontInfoFile).c_str());
 	image.decodeImage();
 	glGenTextures(1, &fontAtlasTexture);
 	glBindTexture(GL_TEXTURE_2D, fontAtlasTexture);
@@ -47,12 +45,23 @@ Font::Font(const char* fontAtlasFile, const char* fontInfoFile)
 	atlasHeight = image.getImageHeight();
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getImageWidth(), image.getImageHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getImage());
 }
+Font::Font(const Font& copy)
+{
+	copy.isBeingCopied = true;
+	memcpy((char*)fontName, copy.fontName, 256);
+	*((int*)&fontHeight) = copy.fontHeight;
+	atlasWidth = copy.atlasWidth;
+	atlasHeight = copy.atlasHeight;
+	memcpy(chars, copy.chars, sizeof(FontChar[256]));
+	stringVertexBuffer = copy.stringVertexBuffer;
+	fontAtlasTexture = copy.fontAtlasTexture;
+}
 
 Font::~Font()
 {
 	delete[] chars;
 	if (stringVertexBuffer) glDeleteBuffers(1, &stringVertexBuffer);
-	glDeleteTextures(1, &fontAtlasTexture);
+	if (!isBeingCopied) glDeleteTextures(1, &fontAtlasTexture);
 }
 
 Font::FontChar Font::getFontChar(char c)
@@ -61,7 +70,19 @@ Font::FontChar Font::getFontChar(char c)
 	return chars[c];
 }
 
-void Font::loadFontInfo(const char* fontInfoFile)
+void Font::operator=(const Font& copy)
+{
+	copy.isBeingCopied = true;
+	memcpy((char*)fontName, copy.fontName, 256);
+	*((int*)&fontHeight) = copy.fontHeight;
+	atlasWidth = copy.atlasWidth;
+	atlasHeight = copy.atlasHeight;
+	memcpy(chars, copy.chars, sizeof(FontChar[256]));
+	stringVertexBuffer = copy.stringVertexBuffer;
+	fontAtlasTexture = copy.fontAtlasTexture;
+}
+
+std::string Font::loadFontInfo(const char* fontInfoFile)
 {
 	std::ifstream fontInfo(fontInfoFile, std::ios::in | std::ios::ate);
 	size_t fileSize = fontInfo.tellg();
@@ -72,6 +93,7 @@ void Font::loadFontInfo(const char* fontInfoFile)
 
 	char* line = fontInfoData;
 	char numberAsString[32] = {};
+	char atlasFileName[256] = {};
 	int lineSize = 0;
 	int maxChars = 0;
 	for (unsigned int i = 0; i < fileSize; i++)
@@ -108,6 +130,25 @@ void Font::loadFontInfo(const char* fontInfoFile)
 						charLine += 11;
 						fetchNumberString(charLine, numberAsString);
 						*((int*)&fontHeight) = atoi(numberAsString);
+					}
+					charLine++;
+				}
+			}
+			if (std::string("page") == std::string(line, 4))
+			{
+				char* charLine = line + 4;
+				while (charLine - line < lineSize)
+				{
+					if (std::string("file=") == std::string(charLine, 5))
+					{
+						int stringLength = 0;
+						charLine += 5;
+						if (*charLine == '"')
+						{
+							charLine++;
+							while (*charLine != '"') { stringLength++; charLine++; }
+							memcpy((void*)atlasFileName, charLine - stringLength, stringLength > 255 ? 255 : stringLength);
+						}
 					}
 					charLine++;
 				}
@@ -172,6 +213,12 @@ void Font::loadFontInfo(const char* fontInfoFile)
 		else lineSize++;
 	}
 	delete[] fontInfoData;
+
+	char* c = (char*)&fontInfoFile[strlen(fontInfoFile)];
+	int i = -1;
+	while (*c != '/' && fontInfoFile <= c) { c--; i++; }
+
+	return std::string(fontInfoFile, strlen(fontInfoFile) - i) + std::string(atlasFileName);
 }
 
 void Font::renderString(const char* text)
@@ -196,6 +243,7 @@ void Font::renderString(const char* text)
 		if (fChar.width == 0 && fChar.height == 0)
 		{
 			validChars--;
+			cursorX += fChar.xAdvance;
 			continue;
 		}
 

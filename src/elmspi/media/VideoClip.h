@@ -26,6 +26,7 @@ class VideoClip : public MediaFile
 		double getFrameRate();
 		double getDuration();
 		double getTimePos();
+		void updateFrame();
 
 		unsigned char* getVideoFrame();
 	private:

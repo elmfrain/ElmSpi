@@ -12,6 +12,12 @@ static struct QuadFace
 	unsigned int texC1, texC2, texC3, texC4;
 	unsigned int norm1, norm2, norm3, norm4;
 };
+static struct TriFace
+{
+	unsigned int vert1, vert2, vert3;
+	unsigned int texC1, texC2, texC3;
+	unsigned int norm1, norm2, norm3;
+};
 
 static bool doesFileExist(const char* fileName)
 {
@@ -118,6 +124,36 @@ QuadFace parseQuadFace(const char* line, size_t lineSize)
 	face.texC1 = ints[1]; face.texC2 = ints[4]; face.texC3 = ints[7]; face.texC4 = ints[10];
 	face.norm1 = ints[2]; face.norm2 = ints[5]; face.norm3 = ints[8]; face.norm4 = ints[11];
 	return QuadFace(face);
+}
+TriFace parseTriFace(const char* line, size_t lineSize)
+{
+	char intAsString[32] = {};
+	uint8_t pos = 0;
+	uint8_t vertInfoIndex = 0;
+	unsigned int ints[9] = {};
+	for (int i = 0; i < lineSize; i++)
+	{
+		char c = line[i];
+		if (isCharNumerical(c))
+		{
+			do
+			{
+				intAsString[pos++] = c;
+				i++;
+				c = line[i];
+			} while (isCharNumerical(c) && i < lineSize);
+			pos = 0;
+			ints[vertInfoIndex] = atoi(intAsString) - 1;
+			memset(intAsString, 0, 32);
+		}
+		if (c == '/' || c == ' ' && vertInfoIndex > 0 || c == 0) vertInfoIndex++;
+		if (vertInfoIndex == 9) break;
+	}
+	TriFace face;
+	face.vert1 = ints[0]; face.vert2 = ints[3]; face.vert3 = ints[6];
+	face.texC1 = ints[1]; face.texC2 = ints[4]; face.texC3 = ints[7];
+	face.norm1 = ints[2]; face.norm2 = ints[5]; face.norm3 = ints[8];
+	return TriFace(face);
 }
 
 Model::Model(const char* fileName)

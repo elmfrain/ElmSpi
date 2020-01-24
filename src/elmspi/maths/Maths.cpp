@@ -18,6 +18,12 @@ namespace espi
 	{
 		return radians * 180.0 / M_PI;
 	}
+	unsigned int factorial(unsigned int factors)
+	{
+		unsigned int result = 1;
+		for (int i = 1; i <= factors; i++) { result *= i; }
+		return result;
+	}
 
 	vec2f operator+(float v, const vec2f& vec)
 	{
@@ -154,6 +160,173 @@ namespace espi
 			}
 		}
 		return matrixf(prevArray, mat.columns, mat.rows);
+	}
+	/*Determinant Helper Function*/
+	static float determinant2x2(float r1c1, float r1c2, float r2c1, float r2c2)
+	{
+		return r1c1 * r2c2 - r2c1 * r1c2;
+	}
+	static float determinant3x3(float r1c1, float r1c2, float r1c3,
+								float r2c1, float r2c2, float r2c3,
+								float r3c1, float r3c2, float r3c3)
+	{
+		return r1c1 * determinant2x2(r2c2, r2c3, r3c2, r3c3) - r1c2 * determinant2x2(r2c1, r2c3, r3c1, r3c3) + r1c3 * determinant2x2(r2c1, r2c2, r3c1, r3c2);
+	}
+	float determinant(const matrixf& mat)
+	{
+		if (mat.columns != mat.rows || mat.columns < 1) throw std::invalid_argument("Can't find the determinant of a rectangle shaped matrix or a 1 by 1 matrix.");
+		if (mat.columns > 9) throw std::invalid_argument("Matrix too big to find determinant");
+
+		if (mat.columns == 2) return determinant2x2(mat.e(1, 1), mat.e(1, 2), mat.e(2, 1), mat.e(2, 2));
+
+		if (mat.columns == 3) return determinant3x3(mat.e(1, 1), mat.e(1, 2), mat.e(1, 3),
+													mat.e(2, 1), mat.e(2, 2), mat.e(2, 3),
+													mat.e(3, 1), mat.e(3, 2), mat.e(3, 3));
+
+		if (mat.columns == 4)
+		{
+			float sum = 0.0f;
+			for (int column = 1; column <= 4; column++)
+			{
+				int8_t sign = (column + 1) % 2 == 0 ? 1 : -1;
+				float coeficientFactor = sign * mat.e(1, column);
+
+				int col1, col2, col3;
+				switch (column)
+				{
+				case 1:
+					col1 = 2; col2 = 3; col3 = 4; break;
+				case 2:
+					col1 = 1; col2 = 3; col3 = 4; break;
+				case 3:
+					col1 = 1; col2 = 2; col3 = 4; break;
+				case 4:
+					col1 = 1; col2 = 2; col3 = 3; break;
+				}
+
+				float determinatFactor = determinant3x3(mat.e(2, col1), mat.e(2, col2), mat.e(2, col3),
+														mat.e(3, col1), mat.e(3, col2), mat.e(3, col3),
+														mat.e(4, col1), mat.e(4, col2), mat.e(4, col3));
+				sum += coeficientFactor * determinatFactor;
+			}
+			return sum;
+		}
+
+		return 0.0f;
+	}
+	static matrixf adjugate3x3(const matrixf& mat)
+	{
+		float matData[9];
+
+		int row1, row2, col1, col2;
+
+		for (int column = 1; column <= 3; column++)
+		{
+			for (int row = 1; row <= 3; row++)
+			{
+				int element = row * 3 - 3 + column;
+				int8_t sign = (element + 1) % 2 == 0 ? 1 : -1;
+
+				switch (column)
+				{
+				case 1:
+					col1 = 2; col2 = 3; break;
+				case 2:
+					col1 = 1; col2 = 3; break;
+				case 3:
+					col1 = 1; col2 = 2; break;
+				}
+				switch (row)
+				{
+				case 1:
+					row1 = 2; row2 = 3; break;
+				case 2:
+					row1 = 1; row2 = 3; break;
+				case 3:
+					row1 = 1; row2 = 2; break;
+				}
+
+				matData[element - 1] = sign * determinant2x2(mat.e(row1, col1), mat.e(row1, col2),
+														 mat.e(row2, col1), mat.e(row2, col2));
+			}
+		}
+
+		matrixf cofactor = matrixf(matData, 3, 3);
+		cofactor.transpose();
+		return cofactor;
+	}
+	matrixf adjugate(const matrixf& mat)
+	{
+		if (mat.columns != mat.rows) throw std::invalid_argument("Matrix must be a square to find it's aducate.");
+		if (mat.columns == 1) return matrixf(1, 1);
+		if (mat.columns == 2)
+		{
+			float matData[4] =
+			{
+				 mat.e(2, 2), -mat.e(1, 2),
+				-mat.e(2, 1),  mat.e(1, 1)
+			}; return matrixf(matData, 2, 2);
+		}
+		if (mat.columns == 3)
+		{
+			return adjugate3x3(mat);
+		}
+		if (mat.columns == 4)
+		{
+			float matData[16];
+
+			int row1, row2, row3, col1, col2, col3;
+
+			for (int column = 1; column <= 4; column++)
+			{
+				for (int row = 1; row <= 4; row++)
+				{
+					int element = row * 4 - 4 + column;
+					int8_t sign = (element + 1) % 2 == 0 ? 1 : -1;
+					if (row % 2 == 0) sign *= -1;
+
+					switch (column)
+					{
+					case 1:
+						col1 = 2; col2 = 3; col3 = 4; break;
+					case 2:
+						col1 = 1; col2 = 3; col3 = 4; break;
+					case 3:
+						col1 = 1; col2 = 2; col3 = 4; break;
+					case 4:
+						col1 = 1; col2 = 2; col3 = 3; break;
+					}
+					switch (row)
+					{
+					case 1:
+						row1 = 2; row2 = 3; row3 = 4; break;
+					case 2:
+						row1 = 1; row2 = 3; row3 = 4; break;
+					case 3:
+						row1 = 1; row2 = 2; row3 = 4; break;
+					case 4:
+						row1 = 1; row2 = 2; row3 = 3; break;
+					}
+
+					matData[element - 1] = sign * determinant3x3(mat.e(row1, col1), mat.e(row1, col2), mat.e(row1, col3),
+																 mat.e(row2, col1), mat.e(row2, col2), mat.e(row2, col3),
+																 mat.e(row3, col1), mat.e(row3, col2), mat.e(row3, col3));
+				}
+			}
+
+			matrixf cofactor = matrixf(matData, 4, 4);
+			cofactor.transpose();
+			return cofactor;
+		}
+		return matrixf(1, 1);
+	}
+	matrixf inverse(const matrixf& mat)
+	{
+		if (mat.columns != mat.rows || mat.columns == 1) throw std::invalid_argument("Matrix must be a square to find it's inverse.");
+		if (mat.columns > 4) throw std::invalid_argument("Matricies over 4x4 in size is not supported yet.");
+
+		return (1.0f / determinant(mat)) * adjugate(mat);
+
 	}
 	vec2f operator*(const vec2f& vec, const matrixf& mat)
 	{

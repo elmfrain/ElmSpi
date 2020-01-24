@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 class Font
 {
@@ -6,11 +7,13 @@ class Font
 		const char fontName[256] = {};
 		const int fontHeight = -1;
 
-		Font(const char* fontAtlasFile, const char* fontInfoFile);
+		Font(const char* fontInfoFile);
+		Font(const Font&);
 		~Font();
 		int getStringWidth(const char* text);
 		int getStringHeight();
 		void renderString(const char* text);
+		void operator=(const Font&);
 	private:
 		static struct FontChar
 		{
@@ -24,12 +27,13 @@ class Font
 		};
 		int atlasWidth;
 		int atlasHeight;
+		mutable bool isBeingCopied = false;
 		FontChar* chars = new FontChar[256];
 		unsigned int stringVertexBuffer = 0;
 		unsigned int fontAtlasTexture = 0;
 
 		FontChar getFontChar(char c);
-		void loadFontInfo(const char* fontInfoFile);
+		std::string loadFontInfo(const char* fontInfoFile);
 		void preRender();
 		void postRender();
 };

@@ -34,10 +34,10 @@ public:
 	bool isInFullScreen() const;
 	bool usingVsync() const;
 	bool isFocused() const;
-	int getImageWidth() const;
-	int getImageHeight() const;
-	int getWindowPosX() const;
-	int getWindowPosY() const;
+	int getWidth() const;
+	int getHeight() const;
+	int getPosX() const;
+	int getPosY() const;
 	void setVsync(bool vsync);
 	void setTitle(const char* newTitle);
 	void setShouldClose(bool shouldClose);

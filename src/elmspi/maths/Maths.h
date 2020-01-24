@@ -15,6 +15,7 @@ namespace espi
 	float toDegrees(float radians);
 	double toRadians(double degrees);
 	double toDegrees(double radians);
+	unsigned int factorial(unsigned int factors);
 
 	struct vec2f {
 		union
@@ -573,6 +574,11 @@ namespace espi
 	matrixf operator-(float v, const matrixf& mat);
 	matrixf operator*(float v, const matrixf& mat);
 	matrixf transpose(const matrixf& mat);
+	/*Currently Only Supports Matrcies up to 4x4*/
+	matrixf adjugate(const matrixf& mat);
+	/*Currently Only Supports Matrcies up to 4x4*/
+	float determinant(const matrixf& mat);
+	matrixf inverse(const matrixf& mat);
 	vec2f operator*(const vec2f& vec, const matrixf& mat);
 	vec2f operator*(const matrixf& mat, const vec2f& vec);
 	vec3f operator*(const vec3f& vec, const matrixf& mat);
