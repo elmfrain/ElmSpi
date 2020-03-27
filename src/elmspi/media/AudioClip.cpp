@@ -15,48 +15,34 @@ void AudioClip::setupForDecoding()
 
 	avPacket = av_packet_alloc();
 	avFrame = av_frame_alloc();
-
-	audioBufferSize = duration * sampleRate * channels + 256;
-	audioBuffer = new short[audioBufferSize];
-	memset(audioBuffer, 0, audioBufferSize * sizeof(short));
 }
 
 void AudioClip::decodeAudio()
 {
 	setupForDecoding();
+	size_t samples = duration * sampleRate + 128;
+	size_t bytesPerSample = av_get_bytes_per_sample(audioCodecContext->sample_fmt);
+	audioBuffer = new ALUtil::AudioBuffer(samples, sampleRate, audioCodecContext->sample_fmt, channels);
 
+	if (audioCodecContext->channel_layout != AV_CH_LAYOUT_MONO && audioCodecContext->channel_layout != AV_CH_LAYOUT_STEREO)
+	{
+		std::cout << "[AudioClip] : Wierd Channel Layout :/\n"; 
+		return;
+	}
+
+	unsigned int samplePos = 0;
 	while (!readFrame(audioCodecContext, avPacket, avFrame, audioStreamIndex))
 	{
-		if (audioCodecContext->sample_fmt == AV_SAMPLE_FMT_S16P)
+		for (int sample = 0; sample < avFrame->nb_samples; sample++)
 		{
-			for (int i = 0; i < avFrame->nb_samples; i++)
+			for (int channel = 0; channel < channels; channel++)
 			{
-				for (int channel = 0; channel < channels; channel++)
+				for (int byte = 0; byte < bytesPerSample; byte++)
 				{
-					short sample = *((short*)(avFrame->data[channel] + i * sizeof(short)));
-					audioBuffer[audioSampleIndex++] = sample;
+					audioBuffer->data[channel][samplePos * bytesPerSample + byte] = avFrame->data[channel][sample * bytesPerSample + byte];
 				}
 			}
-		}
-		if (audioCodecContext->sample_fmt == AV_SAMPLE_FMT_S16)
-		{
-			for (int i = 0; i < avFrame->nb_samples * channels; i++)
-			{
-				short sample = *((short*)(avFrame->data[0] + i * sizeof(short)));
-				audioBuffer[audioSampleIndex++] = sample;
-			}
-		}
-		if (audioCodecContext->sample_fmt == AV_SAMPLE_FMT_FLTP)
-		{
-			for (int i = 0; i < avFrame->nb_samples; i++)
-			{
-				for (int channel = 0; channel < channels; channel++)
-				{
-					float inputSample = *((float*)(avFrame->data[channel] + i * sizeof(float)));
-					short sample = inputSample * 24575;
-					audioBuffer[audioSampleIndex++] = sample;
-				}
-			}
+			samplePos++;
 		}
 	}
 }
@@ -66,7 +52,7 @@ AudioClip::~AudioClip()
 	avcodec_free_context(&audioCodecContext);
 	av_packet_free(&avPacket);
 	av_frame_free(&avFrame);
-	delete[] audioBuffer;
+	delete audioBuffer;
 }
 
 bool AudioClip::isStereo()
@@ -81,11 +67,7 @@ double AudioClip::getDuration()
 {
 	return duration;
 }
-unsigned int AudioClip::audioDataSize()
+ALUtil::AudioBuffer& AudioClip::getAudioBuffer()
 {
-	return audioBufferSize * sizeof(short);
-}
-short* AudioClip::getAudioData()
-{
-	return audioBuffer;
+	return *audioBuffer;
 }

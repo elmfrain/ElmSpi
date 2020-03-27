@@ -52,5 +52,6 @@ namespace WindowUtil
 	Window* getWindowByID(GLFWwindow* window);
 	int getWindowsOpened();
 	void setResizableHint(bool resizable);
+	void audioThreadHint(bool shouldHaveAudioThread);
 	void shutdown();
 };

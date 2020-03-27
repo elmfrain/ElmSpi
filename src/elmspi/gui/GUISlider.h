@@ -40,6 +40,7 @@ class GUISlider
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glDisable(GL_TEXTURE_2D);
+				glDisable(GL_DEPTH_TEST);
 
 				if((this->isHovered() || knobPressed) && !disabled) glColor4f(0.05f, 0.05f, 0.05f, 0.5f);
 				else glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
@@ -56,7 +57,7 @@ class GUISlider
 		GUISliderTrack track;
 		GUIButton knob;
 		char text[256];
-		Font font = Font("");
+		Font* font = nullptr;
 		int windowWidth = 0;
 		int windowHeight = 0;
 		espi::matrixf modelMatrix = espi::matrixf(4, 4);

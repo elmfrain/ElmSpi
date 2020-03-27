@@ -11,6 +11,7 @@ static bool onWindowCallback = false;
 
 /*Window Hint*/
 static bool windowHintResizable = true;
+static bool windowHintShouldHaveAudioThread = false;
 
 static void setWindowHints()
 {
@@ -41,6 +42,7 @@ Window* WindowUtil::getWindowByID(GLFWwindow* window)
 	return value;
 }
 void WindowUtil::setResizableHint(bool resizable) { windowHintResizable = resizable; }
+void WindowUtil::audioThreadHint(bool shouldHaveAudioThread) { windowHintShouldHaveAudioThread = shouldHaveAudioThread; }
 void WindowUtil::shutdown()
 {
 	for (std::map<GLFWwindow*, Window*>::iterator i = windows.begin(); i != windows.end(); i++)
@@ -80,7 +82,6 @@ Window::Window(int sizeX, int sizeY, const char* title)
 		if (!glfwInit()) exit(16);
 		glfwHasInit = true;
 	}
-	ALUtil::initOpenAL();
 
 	this->width = sizeX;
 	this->height = sizeY;
@@ -90,7 +91,12 @@ Window::Window(int sizeX, int sizeY, const char* title)
 	this->needsToBeClosed = false;
 	this->renderCallback = nullptr;
 	this->vsyncActive = true;
-	this->alContext = ALUtil::createContext();
+
+	if (windowHintShouldHaveAudioThread)
+	{
+		ALUtil::initOpenAL();
+		this->alContext = ALUtil::createContext();
+	}
 
 	callback(setTitle(title));
 

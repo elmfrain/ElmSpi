@@ -60,11 +60,11 @@ VideoClip::~VideoClip()
 
 void VideoClip::nextFrame()
 {
-	timePos += 1.0 / frameRate;
-
-	readFrame(videoCodecContext, avPacket, avFrame, videoStreamIndex);
-
-	sws_scale(reformatterContext, (const uint8_t* const*)avFrame->data, avFrame->linesize, 0, avFrame->height, videoFrameData, videoFrameLineSizes);
+	if (!readFrame(videoCodecContext, avPacket, avFrame, videoStreamIndex))
+	{
+		timePos += 1.0 / frameRate;
+		sws_scale(reformatterContext, (const uint8_t* const*)avFrame->data, avFrame->linesize, 0, avFrame->height, videoFrameData, videoFrameLineSizes);
+	}
 }
 
 void VideoClip::seekFrame(double timeStamp)

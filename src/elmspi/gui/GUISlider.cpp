@@ -13,11 +13,11 @@ void GUISlider::setText(const char* text)
 }
 void GUISlider::setFont(Font& font)
 {
-	this->font = font;
+	this->font = &font;
 }
 GUISlider::GUISlider(const char* text, Font& font)
 {
-	this->font = font;
+	this->font = &font;
 	setText(text);
 }
 GUISlider::GUISlider()
@@ -91,14 +91,14 @@ void GUISlider::doRender()
 	track.render();
 	knob.render();
 
-	if (text[0] != 0)
+	if (text[0] != 0 && font != nullptr)
 	{
 		glPushMatrix();
 		{
 			if (!disabled) glColor3f(0.97f, 0.97f, 0.97f);
 			else glColor3f(0.6f, 0.6f, 0.6f);
-			glTranslatef(x + width / 2 - font.getStringWidth(text) / 2, y + height / 2 - font.fontHeight / 2, 0.0f);
-			font.renderString(text);
+			glTranslatef(x + width / 2 - font->getStringWidth(text) / 2, y + height / 2 - font->fontHeight / 2, 0.0f);
+			font->renderString(text);
 		}
 		glPopMatrix();
 	}

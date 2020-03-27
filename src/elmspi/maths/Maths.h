@@ -485,6 +485,19 @@ namespace espi
 			}
 			return matrixf(result);
 		}
+		matrixf operator*(float value) const
+		{
+			matrixf result = matrixf(rows, columns);
+
+			for (uint8_t row = 0; row < rows; row++)
+			{
+				for (uint8_t column = 0; column < columns; column++)
+				{
+					result.e(row + 1, column + 1) = e(row + 1, column + 1) * value;
+				}
+			}
+			return matrixf(result);
+		}
 		void operator+=(const matrixf& mat)
 		{
 			if (rows != mat.rows && columns != mat.columns) throw std::invalid_argument("Addition of matricies with different sizes");

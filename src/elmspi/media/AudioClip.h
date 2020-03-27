@@ -1,5 +1,6 @@
 #pragma once
 #include "MediaFile.h"
+#include "../audio/ALUtil.h"
 
 class AudioClip : public MediaFile
 {
@@ -20,8 +21,7 @@ class AudioClip : public MediaFile
 
 		void decodeAudio();
 
-		unsigned int audioDataSize();
-		short* getAudioData();
+		ALUtil::AudioBuffer& getAudioBuffer();
 	private:
 		bool stereo;
 		int channels;
@@ -32,9 +32,8 @@ class AudioClip : public MediaFile
 		AVFrame* avFrame;
 		AVPacket* avPacket;
 
-		unsigned int audioBufferSize;
 		unsigned int audioSampleIndex;
-		short* audioBuffer;
+		ALUtil::AudioBuffer* audioBuffer;
 
 		void setupForDecoding();
 };

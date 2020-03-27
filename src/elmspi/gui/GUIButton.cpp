@@ -6,7 +6,7 @@ using namespace espi;
 
 GUIButton::GUIButton(const char* text, Font& font)
 {
-	this->font = Font(font);
+	this->font = &font;
 	setText(text);
 }
 
@@ -20,7 +20,7 @@ void GUIButton::setText(const char* text)
 
 void GUIButton::setFont(Font& font)
 {
-	this->font = font;
+	this->font = &font;
 }
 
 GUIButton::GUIButton()
@@ -89,9 +89,10 @@ void GUIButton::doRender()
 {
 	glEnable(GL_ALPHA);
 	glEnable(GL_BLEND);
-	glBlendEquation(GL_ADD);
+	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_DEPTH_TEST);
 
 	if(disabled) glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
 	else if (pressed) glColor4f(0.5f, 0.5f, 0.5f, 0.5f); 
@@ -120,15 +121,15 @@ void GUIButton::doRender()
 	}
 	glEnd();
 
-	if (text[0] != 0)
+	if (text[0] != 0 && font != nullptr)
 	{
 		glPushMatrix();
 		{
 			if (disabled) glColor3f(0.6f, 0.6f, 0.6f);
 			else if (pressed) glColor3f(0.98f, 1.0f, 0.78f);
 			else glColor3f(0.97f, 0.97f, 0.97f);
-			glTranslatef(x + width / 2 - font.getStringWidth(text) / 2, y + height/ 2 - font.fontHeight / 2, 0.0f);
-			font.renderString(text);
+			glTranslatef(x + width / 2 - font->getStringWidth(text) / 2, y + height/ 2 - font->fontHeight / 2, 0.0f);
+			font->renderString(text);
 		}
 		glPopMatrix();
 	}

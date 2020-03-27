@@ -36,7 +36,7 @@ class GUIButton
 		bool released = false;
 	protected:
 		char text[256];
-		Font font = Font("");
+		Font* font = nullptr;
 		int windowWidth = 0;
 		int windowHeight = 0;
 		espi::matrixf modelMatrix = espi::matrixf(4, 4);
